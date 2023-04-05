@@ -39,7 +39,9 @@ public class TextProcessor {
                     System.out.println("replace");
                 }
                 case 'm', '5' -> {
-                    System.out.println("merge");
+                    System.out.println("Enter the directory path where your files are present (max 5 files): ");
+                    String path = scanner.nextLine();
+                    TextProcessorUtil.mergeFiles(path);
                 }
                 case 'e', '6' -> {
                     TextProcessorUtil.printExitMessage();
@@ -53,8 +55,7 @@ public class TextProcessor {
     }
 
     private static boolean keepRunning(char flag) {
-        boolean ret = (flag == 'e' || flag == '6');
-        return !ret;
+        return !(flag == 'e' || flag == '6');
     }
 
 }

@@ -1,9 +1,9 @@
 package io.jb.textprocessor.util;
 import java.io.*;
-import java.nio.file.FileSystems;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.nio.file.*;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class TextProcessorUtil {
 
@@ -59,8 +59,18 @@ public class TextProcessorUtil {
         }
     }
 
+    public static void mergeFiles(String path) {
+        try {
+            mergeFilesNIO(path);
+            System.out.println("Files merged successfully.");
+        } catch (IOException e) {
+            System.out.println("Unable to merge files.");
+            System.out.println(e.getMessage());
+        }
+    }
+
     private static void removeDuplicatesIO(String path) throws IOException {
-        Set<String> lines = readFile(path);
+        Set<String> lines = readUniqueLines(path);
         if (!Objects.isNull(lines)) {
             removeDuplicatesInFile(lines, path);
         }
@@ -68,13 +78,13 @@ public class TextProcessorUtil {
 
     private static void removeDuplicatesNIO(String path) throws IOException {
         Path filePath = FileSystems.getDefault().getPath(path);
-        Set<String> lines = readFileNIO(filePath);
+        Set<String> lines = readUniqueLinesNIO(filePath);
         if (!Objects.isNull(lines)) {
             removeDuplicatesInFileNIO(lines, filePath);
         }
     }
 
-    private static Set<String> readFile(String path) throws IOException {
+    private static Set<String> readUniqueLines(String path) throws IOException {
         Set<String> lines;
         try (FileReader fr = new FileReader(path)) {
             BufferedReader br = new BufferedReader(fr);
@@ -87,7 +97,7 @@ public class TextProcessorUtil {
         return lines;
     }
 
-    private static Set<String> readFileNIO(Path path) throws IOException {
+    private static Set<String> readUniqueLinesNIO(Path path) throws IOException {
         Set<String> lines;
         try (BufferedReader br = Files.newBufferedReader(path)) {
             Scanner sc = new Scanner(br);
@@ -120,4 +130,50 @@ public class TextProcessorUtil {
             }
         }
     }
+
+    private static void mergeFilesNIO(String dirPath) throws IOException {
+        Set<String> files = listFiles(dirPath);
+        String mergedPathFile = dirPath + "MergedFile.txt";
+        Path mergedPath = FileSystems.getDefault().getPath(mergedPathFile);
+        List<String> allLines = new ArrayList<>();
+        for (String file : files) {
+            Path path = FileSystems.getDefault().getPath(dirPath + file);
+            List<String> lines = readFileNIO(path);
+            allLines.addAll(lines);
+        }
+        writeInMergedFileNIO(allLines, mergedPath);
+    }
+
+    private static Set<String> listFiles(String dirPath) throws IOException {
+        try (Stream<Path> stream = Files.list(Paths.get(dirPath))) {
+            return stream
+                    .filter(file -> !Files.isDirectory(file))
+                    .map(Path::getFileName)
+                    .map(Path::toString)
+                    .collect(Collectors.toSet());
+        }
+    }
+
+    private static List<String> readFileNIO(Path path) throws IOException {
+        List<String> lines;
+        try (BufferedReader br = Files.newBufferedReader(path)) {
+            Scanner sc = new Scanner(br);
+            lines = new ArrayList<>();
+            while (sc.hasNextLine()) {
+                lines.add(sc.nextLine());
+            }
+        }
+        return lines;
+    }
+
+    private static void writeInMergedFileNIO(List<String> lines, Path path) throws IOException {
+        try (BufferedWriter bw = Files.newBufferedWriter(path)) {
+            bw.flush();
+            for (String line : lines) {
+                bw.write(line);
+                bw.newLine();
+            }
+        }
+    }
+
 }
