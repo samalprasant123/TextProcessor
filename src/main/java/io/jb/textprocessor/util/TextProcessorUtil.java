@@ -7,29 +7,36 @@ import java.util.*;
 
 public class TextProcessorUtil {
 
+    private static final String banner = """
+                ######## ######## ##     ## ########    ########  ########   #######   ######  ########  ######   ######   #######  ########
+                   ##    ##        ##   ##     ##       ##     ## ##     ## ##     ## ##    ## ##       ##    ## ##    ## ##     ## ##     ##
+                   ##    ##         ## ##      ##       ##     ## ##     ## ##     ## ##       ##       ##       ##       ##     ## ##     ##
+                   ##    ######      ###       ##       ########  ########  ##     ## ##       ######    ######   ######  ##     ## ########
+                   ##    ##         ## ##      ##       ##        ##   ##   ##     ## ##       ##             ##       ## ##     ## ##   ##
+                   ##    ##        ##   ##     ##       ##        ##    ##  ##     ## ##    ## ##       ##    ## ##    ## ##     ## ##    ##
+                   ##    ######## ##     ##    ##       ##        ##     ##  #######   ######  ########  ######   ######   #######  ##     ##
+                """;
+
+    private static final String menu = """
+                    +---------------------------------------------------------------------+
+                    |                                 MENU                                |
+                    +---------------------------------------------------------------------+
+                    |Press:                                                               |
+                    |      -> 1 or s: to sort alphabetically (Ascending/Descending)       |
+                    |      -> 2 or r: to remove duplicate                                 |
+                    |      -> 3 or f: to find text and indicate line number in the file   |
+                    |      -> 4 or p: to replace a specific text with new text            |
+                    |      -> 5 or m: to merge files into a single file                   |
+                    |      -> 6 or e: to exit the program                                 |
+                    +---------------------------------------------------------------------+
+                    """;
+
     public static void printBanner() {
-        System.out.println("\n\n\n######## ######## ##     ## ########    ########  ########   #######   ######  ########  ######   ######   #######  ########  \n" +
-                "   ##    ##        ##   ##     ##       ##     ## ##     ## ##     ## ##    ## ##       ##    ## ##    ## ##     ## ##     ## \n" +
-                "   ##    ##         ## ##      ##       ##     ## ##     ## ##     ## ##       ##       ##       ##       ##     ## ##     ## \n" +
-                "   ##    ######      ###       ##       ########  ########  ##     ## ##       ######    ######   ######  ##     ## ########  \n" +
-                "   ##    ##         ## ##      ##       ##        ##   ##   ##     ## ##       ##             ##       ## ##     ## ##   ##   \n" +
-                "   ##    ##        ##   ##     ##       ##        ##    ##  ##     ## ##    ## ##       ##    ## ##    ## ##     ## ##    ##  \n" +
-                "   ##    ######## ##     ##    ##       ##        ##     ##  #######   ######  ########  ######   ######   #######  ##     ## \n\n\n");
+        System.out.println(banner);
     }
 
     public static void printMenu() {
-        System.out.println();
-        System.out.println("+---------------------------------------------------------------------+");
-        System.out.println("|                                 MENU                                |");
-        System.out.println("+---------------------------------------------------------------------+");
-        System.out.println("|Press:                                                               |");
-        System.out.println("|      -> 1 or s: to sort alphabetically (Ascending/Descending)       |");
-        System.out.println("|      -> 2 or r: to remove duplicate                                 |");
-        System.out.println("|      -> 3 or f: to find text and indicate line number in the file   |");
-        System.out.println("|      -> 4 or p: to replace a specific text with new text            |");
-        System.out.println("|      -> 5 or m: to merge files into a single file                   |");
-        System.out.println("|      -> 6 or e: to exit the program                                 |");
-        System.out.println("+---------------------------------------------------------------------+");
+        System.out.println(menu);
     }
 
     public static void printExitMessage() {
