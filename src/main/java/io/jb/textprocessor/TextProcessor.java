@@ -4,15 +4,17 @@ import io.jb.textprocessor.util.TextProcessorUtil;
 
 import java.io.IOException;
 import java.util.Scanner;
+
 public class TextProcessor {
     private static final Scanner scanner = new Scanner(System.in);
+
     public static void main(String[] args) {
         TextProcessorUtil.printBanner();
         runApplication();
         TextProcessorUtil.printExitMessage();
     }
 
-    private static void runApplication()  {
+    private static void runApplication() {
         char exitOrContinue;
         do {
             TextProcessorUtil.printMenu();
