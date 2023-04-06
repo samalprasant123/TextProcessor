@@ -1,4 +1,5 @@
 package io.jb.textprocessor;
+
 import io.jb.textprocessor.util.TextProcessorUtil;
 
 import java.io.IOException;
@@ -10,7 +11,8 @@ public class TextProcessor {
         runApplication();
         TextProcessorUtil.printExitMessage();
     }
-    private static void runApplication() {
+
+    private static void runApplication()  {
         char exitOrContinue;
         do {
             TextProcessorUtil.printMenu();
@@ -63,6 +65,7 @@ public class TextProcessor {
             exitOrContinue = scanner.nextLine().charAt(0);
         } while (keepRunning(exitOrContinue));
     }
+
     private static boolean keepRunning(char flag) {
         return !(flag == 'e' || flag == '6');
     }
