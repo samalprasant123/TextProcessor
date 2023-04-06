@@ -1,5 +1,4 @@
 package io.jb.textprocessor;
-
 import io.jb.textprocessor.util.TextProcessorUtil;
 
 import java.io.IOException;
@@ -11,8 +10,7 @@ public class TextProcessor {
         runApplication();
         TextProcessorUtil.printExitMessage();
     }
-
-    private static void runApplication()  {
+    private static void runApplication() {
         char exitOrContinue;
         do {
             TextProcessorUtil.printMenu();
@@ -21,15 +19,11 @@ public class TextProcessor {
             char input = userInput.toLowerCase().charAt(0);
             switch (input) {
                 case 's', '1' -> {
-
-                    System.out.println("Enter filename with extension?");
-                    String filePathWithExtension = scanner.nextLine();
+                    System.out.println("Enter file path?");
+                    String path = scanner.nextLine();
                     System.out.println("Enter sorting order (asc/desc)");
                     String sortingOrder = scanner.nextLine();
-                    TextProcessorUtil.sortLines(filePathWithExtension, sortingOrder);
-                    //TextProcessorUtil.sortLinesNIO(filePathWithExtension,sortingOrder);
-                    System.out.println("File content is sorted in " + sortingOrder + " order & \nFill path :" + filePathWithExtension + "\n");
-
+                    TextProcessorUtil.sortLines(path, sortingOrder);
                 }
                 case 'r', '2' -> {
                     System.out.println("Enter file path: ");
@@ -37,24 +31,22 @@ public class TextProcessor {
                     TextProcessorUtil.removeDuplicates(path);
                 }
                 case 'f', '3' -> {
-                    System.out.println("Enter filename with extension?");
-                    String filePathWithExtension = scanner.nextLine();
+                    System.out.println("Enter file path?");
+                    String path = scanner.nextLine();
                     System.out.println("Enter search text");
                     String searchText = scanner.nextLine();
-                    TextProcessorUtil.searchAndShowLineNumber(filePathWithExtension, searchText);
-                    //TextProcessorUtil.searchAndShowLineNumberNIO(filePathWithExtension,searchText);
-                    System.out.println("Result for \"" + searchText + "\" :");
+                    TextProcessorUtil.searchAndShowLineNumber(path, searchText);
+
                 }
                 case 'p', '4' -> {
-                    System.out.println("Enter filename with extension?");
-                    String filePathWithExtension = scanner.nextLine();
+                    System.out.println("Enter file path?");
+                    String path = scanner.nextLine();
                     System.out.println("Enter search text");
                     String searchText = scanner.nextLine();
                     System.out.println("Enter replacement text");
                     String replacementText = scanner.nextLine();
-                    TextProcessorUtil.searchAndReplace(filePathWithExtension, searchText, replacementText);
-                    //TextProcessorUtil.searchAndReplaceNIO(filePathWithExtension,searchText,replacementText);
-                    System.out.println(searchText + " was replaced by " + replacementText);
+                    TextProcessorUtil.searchAndReplace(path, searchText, replacementText);
+
                 }
                 case 'm', '5' -> {
                     System.out.println("Enter the directory path where your files are present (max 5 files): ");
@@ -71,7 +63,6 @@ public class TextProcessor {
             exitOrContinue = scanner.nextLine().charAt(0);
         } while (keepRunning(exitOrContinue));
     }
-
     private static boolean keepRunning(char flag) {
         return !(flag == 'e' || flag == '6');
     }
