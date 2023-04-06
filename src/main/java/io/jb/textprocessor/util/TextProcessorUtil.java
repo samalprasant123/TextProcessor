@@ -41,35 +41,39 @@ public class TextProcessorUtil {
     public static void printExitMessage() {
         System.out.println("\nBye! Exiting text processing application.\n");
     }
-    public static void sortLines(String filePathWithExtension, String sortingOrder) {
+    public static void sortLines(String filePath, String sortingOrder) {
         BufferedReader reader;
-        BufferedWriter writer;
-        List<String> listOfLines = new ArrayList<>();
+        List<String> listOfLines;
         try {
-            reader = new BufferedReader(new FileReader(filePathWithExtension));
-            String line = reader.readLine();
-            while (line != null) {
-                listOfLines.add(line);
-                line = reader.readLine();
+            reader = new BufferedReader(new FileReader(filePath));
+            Scanner sc = new Scanner(reader);
+            listOfLines = new ArrayList<>();
+            while (sc.hasNextLine()) {
+                listOfLines.add(sc.nextLine());
             }
-            if (sortingOrder.equalsIgnoreCase("asc")) {
-                Collections.sort(listOfLines);
-
-            }
-            if (sortingOrder.equalsIgnoreCase("desc")) {
-                Collections.sort(listOfLines, Collections.reverseOrder());
-            }
-            writer = new BufferedWriter(new FileWriter(filePathWithExtension));
-            for (String listElement : listOfLines) {
-                writer.write(listElement + "\n");
-            }
-            writer.close();
+            sortByPreference(sortingOrder, listOfLines);
+            writeSortedLinesToFile(filePath, listOfLines);
+            System.out.println("File content is sorted in " + sortingOrder + " order & \nFile  path :" + filePath + "\n");
 
         } catch (IOException e) {
-            System.out.println(filePathWithExtension + " file is not found. " + e.getMessage());
+            System.out.println(filePath + " file is not found. " + e.getMessage());
             System.out.println(e.getMessage());
 
         }
+    }
+    private static void writeSortedLinesToFile(String filePath, List<String> listOfLines) throws IOException {
+        try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(filePath))) {
+            for (String listElement : listOfLines) {
+                bufferedWriter.write(listElement + "\n");
+            }
+        }
+    }
+    private static void sortByPreference(String sortingOrder, List<String> listOfLines) {
+        if (sortingOrder.equalsIgnoreCase("asc")) {
+            Collections.sort(listOfLines);
+        } else if (sortingOrder.equalsIgnoreCase("desc")) {
+            Collections.sort(listOfLines, Collections.reverseOrder());
+        } else System.out.println(sortingOrder + " is not asc or desc");
     }
     public static void removeDuplicates(String path) {
         try {
@@ -83,60 +87,56 @@ public class TextProcessorUtil {
     }
     public static void searchAndShowLineNumber(String fileName, String searchText) {
         BufferedReader reader;
-        BufferedWriter writer;
-        List<String> listOfLines = new ArrayList<>();
+        Scanner sc;
+        ArrayList<Integer> listOfLineNumbers;
         try {
             reader = new BufferedReader(new FileReader(fileName));
-            String line = reader.readLine();
+            sc = new Scanner(reader);
             int lineNumber = 0;
-            while (line != null) {
+            listOfLineNumbers = new ArrayList<>();
+            while (sc.hasNextLine()) {
                 lineNumber++;
-                if (line.contains(searchText)) {
-                    listOfLines.add(lineNumber + "->" + searchText + "\n");
+                if (sc.nextLine().toLowerCase().contains(searchText.toLowerCase())) {
+                    listOfLineNumbers.add(lineNumber);
                 }
-                line = reader.readLine();
             }
-        } catch (FileNotFoundException e) {
-            System.out.println("File not found." + e.getMessage());
-
-        } catch (IOException e) {
-            throw new RuntimeException(e.getMessage());
-        }
-        try {
-            writer = new BufferedWriter(new FileWriter(fileName));
-            for (String st : listOfLines) {
-                System.out.println(st);
-                writer.write(st);
-            }
-            writer.close();
+            printLineNumbers(searchText, listOfLineNumbers);
         } catch (IOException e) {
             System.out.println("File not found.");
             System.out.println(e.getMessage());
         }
-
+    }
+    private static void printLineNumbers(String searchText, ArrayList<Integer> listOfLineNumbers) {
+        int numberOfLines = listOfLineNumbers.size();
+        if (numberOfLines > 0)
+            System.out.println("\"" + searchText + "\" appeared in " + numberOfLines + "lines :" + listOfLineNumbers);
+        else System.out.println("\"" + searchText + "\" did not appeared in the file");
     }
     public static void searchAndReplace(String fileName, String searchText, String newText) {
         BufferedReader reader;
-        BufferedWriter writer;
-        List<String> listOfLines = new ArrayList<>();
+        List<String> listOfLines;
+        Scanner scanner;
+        int replacementCounts = 0;
         try {
             reader = new BufferedReader(new FileReader(fileName));
-            String line = reader.readLine();
-            writer = new BufferedWriter(new FileWriter(fileName));
-            while (line != null) {
-                if (line.contains(searchText)) {
-                    String newLine = line.replace(searchText, newText);
-                    System.out.println(newLine);
-                    listOfLines.add(newLine);
+            listOfLines = new ArrayList<>();
+            scanner = new Scanner(reader);
+            String currentLine = "";
+            while (scanner.hasNextLine()) {
+                currentLine = scanner.nextLine();
+                if (currentLine.toLowerCase().contains(searchText.toLowerCase())) {
+                    replacementCounts = replacementCounts + 1;
+                    String updatedLine = currentLine.replace(searchText, newText);
+                    listOfLines.add(updatedLine);
                 } else {
-                    listOfLines.add(line);
+                    listOfLines.add(currentLine);
                 }
-                line = reader.readLine();
             }
-            for (String l : listOfLines) {
-                writer.write(l + "\n");
-            }
-            writer.close();
+            writeSortedLinesToFile(fileName, listOfLines);
+            if (replacementCounts > 0) {
+                System.out.println("There were " + replacementCounts + " replacements.");
+            } else
+                System.out.println(searchText + " was not found in file ;hence no replacement happened.");
         } catch (IOException e) {
             System.out.println("File not found. ");
             System.out.println(e.getMessage());
@@ -188,9 +188,7 @@ public class TextProcessorUtil {
         return lines;
     }
     private static void removeDuplicatesInFile(Set<String> lines, String path) throws IOException {
-        try (FileWriter fw = new FileWriter(path);
-             BufferedWriter bw = new BufferedWriter(fw)
-        ) {
+        try (FileWriter fw = new FileWriter(path); BufferedWriter bw = new BufferedWriter(fw)) {
             bw.flush();
             for (String line : lines) {
                 bw.write(line);
@@ -221,8 +219,7 @@ public class TextProcessorUtil {
     }
     private static Set<String> listFiles(String dirPath) throws IOException {
         try (Stream<Path> stream = Files.list(Paths.get(dirPath))) {
-            return stream
-                    .filter(file -> !Files.isDirectory(file))
+            return stream.filter(file -> !Files.isDirectory(file))
                     .map(Path::getFileName)
                     .map(Path::toString)
                     .collect(Collectors.toSet());
@@ -248,28 +245,29 @@ public class TextProcessorUtil {
             }
         }
     }
-/*public static void sortLinesNIO(String filePathWithExtension, String sortingOrder) throws IOException {
-        // using stream
-        writer = new BufferedWriter(new FileWriter(filePathWithExtension));
-        try (Stream<String> lines = Files.lines(Path.of(filePathWithExtension))) {
-            if (sortingOrder.equalsIgnoreCase("asc")) {
-                lines.sorted().forEach(
-                        input -> {
-                              //  writer.write(input.concat("\n"));
-                                System.out.println(input);
-                                lines.
-                        });
-            }
-            if (sortingOrder.equalsIgnoreCase("desc")) {
-                lines.sorted(Collections.reverseOrder()).forEach(
-                        input -> {
-                            //  writer.write(input.concat("\n"));
-                            System.out.println(input);
-                        });
-            }
+
+    /*
+    public static void sortLinesNIO(String filePath, String sortingOrder) throws IOException {
+    BufferedReader bufferedReader ;
+    List<String> listOfLines;
+    try {
+        bufferedReader = Files.newBufferedReader(Path.of(filePath));
+        Scanner sc = new Scanner(bufferedReader);
+        listOfLines = new ArrayList<>();
+        while (sc.hasNextLine()) {
+            listOfLines.add(sc.nextLine());
         }
-        writer.close();
+        sortByPreference(sortingOrder, listOfLines);
+        writeSortedLinesToFile(filePath, listOfLines);
+        System.out.println("File content is sorted in " + sortingOrder + " order & \nFile  path :" + filePath + "\n");
+
+    } catch (IOException e) {
+        System.out.println(filePath + " file is not found. " + e.getMessage());
+        System.out.println(e.getMessage());
+
     }
+    }
+    /*
     public static void searchAndShowLineNumberNIO(String fileName, String searchText) {
         try {
             reader = new BufferedReader(new FileReader(fileName));
